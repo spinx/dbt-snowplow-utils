@@ -68,23 +68,7 @@ jobs:
         dbt_version: ["1.*"]
         warehouse: ["duckdb"]
         # warehouse: ["postgres", "bigquery", "snowflake", "databricks", "redshift", "spark_iceberg", "duckdb"] # TODO: Add RS self-hosted runner
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_TEST_DBNAME }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_TEST_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_TEST_PASS }}
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-      if: ${{matrix.warehouse != 'duckdb'}}
+    
 
     steps:
       - name: Check out
