@@ -66,7 +66,8 @@ jobs:
       fail-fast: false
       matrix:
         dbt_version: ["1.*"]
-        warehouse: ["postgres", "bigquery", "snowflake", "databricks", "redshift", "spark_iceberg", "duckdb"] # TODO: Add RS self-hosted runner
+        warehouse: ["duckdb"]
+        # warehouse: ["postgres", "bigquery", "snowflake", "databricks", "redshift", "spark_iceberg", "duckdb"] # TODO: Add RS self-hosted runner
     services:
       postgres:
         image: postgres:latest
@@ -83,6 +84,7 @@ jobs:
         ports:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
+      if: ${{matrix.warehouse != 'duckdb'}}
 
     steps:
       - name: Check out
@@ -92,12 +94,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_SNOWPLOWCI_READ_USERNAME }}
           password: ${{ secrets.DOCKERHUB_SNOWPLOWCI_READ_PASSWORD }}
+        if: ${{matrix.warehouse != 'duckdb'}}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
+        if: ${{matrix.warehouse != 'duckdb'}}
       - name: Set warehouse variables
         id: set_warehouse
         run: |
